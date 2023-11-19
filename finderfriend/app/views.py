@@ -1,12 +1,13 @@
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
-
+from .models import Likes
 
 # Create your views here.
 def index(request):
     return render(request, 'app/index.html')
 
-
-def profile(request):
+@login_required
+def profile_view(request):
     return render(request, 'app/profile.html')
 
 
