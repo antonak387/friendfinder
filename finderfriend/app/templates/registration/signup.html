@@ -1,10 +1,45 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+{% extends 'registration/layout.html' %}
+
+{% block title  %}Регистрация{% endblock %}
+
+{% block content  %}
+<!--p class="text-center">finder-friend</p-->
+<form method="post">
+    {% csrf_token %}
+
+
+    <div class="mb-3">
+        <label for="id_username" class="form-label">Username</label>
+        <input class="form-control rounded-pill" type="text" name="username" maxlength="150" autocapitalize="none" autocomplete="username" autofocus="" required="" id="id_username">
+    </div>
+    <div class="mb-4">
+        <label for="id_password1">Password:</label>
+        <input class="form-control rounded-pill" type="password" name="password1" autocomplete="new-password" required="" id="id_password1">
+    </div>
+    <div class="mb-4">
+        <label for="id_password2">Password confirmation:</label>
+        <input class="form-control rounded-pill" type="password" name="password2" autocomplete="new-password" required="" id="id_password2">
+    </div>
+    
+    <button class="btn btn-outline-dark w-100 py-8 fs-5 mb-4 rounded-pill">Создать новый аккаунт</button>
+    {{ form.errors }}
+
+
+    <!--div class="d-flex align-items-center justify-content-between mb-4">
+        <div class="form-check">
+            <input class="form-check-input primary" type="checkbox" value=""
+                   id="flexCheckChecked" checked>
+            <label class="form-check-label text-dark" for="flexCheckChecked">
+                Remeber this Device
+            </label>
+        </div>
+        <a class="text-primary fw-bold" href="./index.html">Forgot Password ?</a>
+    </div-->
+
+    <!--a href="./index.html" class="btn btn-primary w-100 py-8 fs-4 mb-4 rounded-2">Sign In</a-->
+    <div class="d-flex align-items-center justify-content-center">
+        <p class="ms-2 mb-0 fw-bold">Уже есть аккаунт?</p>
+        <a class="text-primary fw-bold ms-2" href="{% url 'login' %}">Войти</a>
+    </div>
+</form>
+{% endblock %}
