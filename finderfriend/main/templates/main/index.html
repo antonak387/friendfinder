@@ -18,8 +18,51 @@
             </ul>
 
             <div class="text-end">
-                <a href="{% url 'login' %}" class="btn btn-outline-dark rounded-pill me-2">Войти</a>
-                <!--button type="button" class="btn btn-warning rounded-pill">Создать аккаунт</button-->
+                <button type="button" class="btn btn-outline-dark rounded-pill btn-lg px-4 gap-3" data-bs-toggle="modal"
+                        data-bs-target="#logInModal">Войти
+                </button>
+
+                <div class="modal fade" id="logInModal" tabindex="-1" aria-labelledby="exampleSingLabel"
+                     aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Вход</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form method="post">
+                                    {% csrf_token %}
+                                    <div class="mb-3">
+                                        <label for="exampleInputEmail1" class="form-label">Username</label>
+                                        <input type="text" name="username" class="form-control rounded-pill"
+                                               id="username">
+                                    </div>
+                                    <div class="mb-4">
+                                        <label for="exampleInputPassword1" class="form-label">Password</label>
+                                        <input type="password" class="form-control rounded-pill" name="password"
+                                               id="password">
+                                    </div>
+                                    <button class="btn btn-outline-dark w-100 py-8 fs-5 mb-4 rounded-pill">Войти
+                                    </button>
+                                    {{ form.errors }}
+                                    <!--div class="d-flex align-items-center justify-content-between mb-4">
+                                        <div class="form-check">
+                                            <input class="form-check-input primary" type="checkbox" value=""
+                                                   id="flexCheckChecked" checked>
+                                            <label class="form-check-label text-dark" for="flexCheckChecked">
+                                                Remeber this Device
+                                            </label>
+                                        </div>
+                                        <a class="text-primary fw-bold" href="./index.html">Forgot Password ?</a>
+                                    </div-->
+
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -33,12 +76,11 @@
            the world’s most popular front-end open source toolkit, featuring Sass variables and mixins,
             responsive grid system, extensive prebuilt components, and powerful JavaScript plugins.</p-->
         <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
-            <a href="{% url 'signup' %}" class="btn btn-outline-dark rounded-pill me-2">Создать аккаунт</a>
-            <!--button type="button" class="btn btn-outline-dark rounded-pill btn-lg px-4 gap-3" data-bs-toggle="modal"
-                    data-bs-target="#singinModal">Создать аккаунт
+            <button type="button" class="btn btn-outline-dark rounded-pill btn-lg px-4 gap-3" data-bs-toggle="modal"
+                    data-bs-target="#singUpModal">Создать аккаунт
             </button>
 
-            <div class="modal fade" id="singinModal" tabindex="-1" aria-labelledby="exampleSingLabel"
+            <div class="modal fade" id="singUpModal" tabindex="-1" aria-labelledby="exampleSingLabel"
                  aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered">
                     <div class="modal-content">
@@ -48,27 +90,42 @@
                                     aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
-                            <form>
+                            <form method="post">
+                                {% csrf_token %}
+                                {{ form.as_p}}
+
                                 <div class="mb-3">
-                                    <label for="exampleInputEmail1" class="form-label">Email адрес</label>
-                                    <input type="email" class="form-control rounded-pill" id="exampleInputEmail2"
-                                           aria-describedby="emailHelp">
+                                    <label for="id_username" class="form-label">Username</label>
+                                    <input class="form-control rounded-pill" type="text" name="username" maxlength="150"
+                                           autocapitalize="none" autocomplete="username" autofocus="" required=""
+                                           id="id_username">
                                 </div>
                                 <div class="mb-3">
-                                    <label for="exampleInputPassword1" class="form-label">Пароль</label>
-                                    <input type="password" class="form-control rounded-pill" id="exampleInputPassword2">
+                                    <label for="id_username" class="form-label">Email</label>
+                                    <input class="form-control rounded-pill" type="text" name="email" maxlength="254"
+                                           autocapitalize="none" autocomplete="username" autofocus="" required=""
+                                           id="id_email">
                                 </div>
-                                <div class="mb-3">
-                                    <label for="exampleInputPassword1" class="form-label">Пароль</label>
-                                    <input type="password" class="form-control rounded-pill" id="exampleInputPassword3">
+                                <div class="mb-4">
+                                    <label for="id_password1">Password:</label>
+                                    <input class="form-control rounded-pill" type="password" name="password1"
+                                           autocomplete="new-password" required="" id="id_password1">
                                 </div>
-                                <button type="submit" class="btn btn-primary rounded-pill px-4">Продолжить регистрацию
+                                <div class="mb-4">
+                                    <label for="id_password2">Password confirmation:</label>
+                                    <input class="form-control rounded-pill" type="password" name="password2"
+                                           autocomplete="new-password" required="" id="id_password2">
+                                </div>
+
+                                <button class="btn btn-outline-dark w-100 py-8 fs-5 mb-4 rounded-pill">Создать новый
+                                    аккаунт
                                 </button>
+                                {{ form.errors }}
                             </form>
                         </div>
                     </div>
                 </div>
-            </div-->
+            </div>
         </div>
     </div>
 </div>

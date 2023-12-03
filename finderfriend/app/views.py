@@ -1,35 +1,26 @@
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render
-
+from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views.generic.edit import CreateView
 from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import Group
 
-from .models import Likes
 
-
-class SignUp(CreateView):
-    form_class = UserCreationForm
-    success_url = reverse_lazy("login")
-    template_name = "registration/signup.html"
-
-@login_required(login_url='login/')
+@login_required('home')
 def index(request):
     return render(request, 'app/index.html')
 
 
-@login_required(login_url='login/')
+@login_required('home')
 def profile_view(request):
     return render(request, 'app/profile.html')
 
 
-@login_required(login_url='login/')
+@login_required('home')
 def likes(request):
     return render(request, 'app/likes.html')
 
 
-@login_required(login_url='login/')
+@login_required('home')
 def matches(request):
     return render(request, 'app/likes.html')
-
-
