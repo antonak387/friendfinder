@@ -7,7 +7,7 @@
     <div class="row justify-content-center">
         <div class="col-md-6">
             <h2 class="text-center mb-4">Редактор профиля</h2>
-            <form method="post" class="form">
+            <form method="post" class="form" enctype="multipart/form-data">
                 {% csrf_token %}
                 <div class="mb-3">
                     <label for="{{ form.username.id_for_label }}" class="form-label">Username</label>
@@ -34,8 +34,8 @@
                     {{ form.birth_date }}
                 </div>
                 <div class="mb-4">
-                    <label for="{{ form.profile_picture.id_for_label }}">Фотография профиля:</label>
-                    {{ form.profile_picture }}
+                    <label for="{{ form.image.id_for_label }}">Фотография профиля:</label>
+                    {{ form.image }}
                 </div>
 
                 <button type="submit" class="btn btn-outline-dark rounded-pill w-100">Сохранить изменения</button>

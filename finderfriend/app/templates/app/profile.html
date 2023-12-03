@@ -8,12 +8,16 @@
 <div class="container d-flex justify-content-center mt-5">
     <div class="card p-3 py-4">
         <div class="text-center">
-			<img src= "{{ user.profile_picture }}" width="100" class="rounded-circle">
+            {% if user.image %}
+            <img src="{{ user.image.url }}" width="400">
+            {% else %}
+            <img src="../static/app/images/default.png" width="400">
+            {% endif %}
             <h3 class="mt-2">{{ user.username }}</h3>
-			<span class="mt-1 clearfix">{{ user.first_name }}</span>
-			<hr class="line">
-			<a href="{% url 'profile_edit' %}" class="btn btn-outline-dark rounded-pill me-2">Редактировать профиль</a>
-		</div>
+            <span class="mt-1 clearfix">{{ user.first_name }}</span>
+            <hr class="line">
+            <a href="{% url 'profile_edit' %}" class="btn btn-outline-dark rounded-pill me-2">Редактировать профиль</a>
+        </div>
     </div>
 </div>
 

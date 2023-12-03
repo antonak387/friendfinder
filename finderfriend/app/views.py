@@ -27,15 +27,10 @@ class ProfileEditView(LoginRequiredMixin, UpdateView):
     model = CustomUser
     form_class = CustomUserChangeForm
     template_name = 'app/profile_edit.html'  # Замените на имя вашего шаблона
-    success_url = reverse_lazy('profile_edit')  # Замените на имя вашего URL-пути редактора профиля
+    success_url = reverse_lazy('profile')  # Замените на имя вашего URL-пути редактора профиля
 
     def get_object(self, queryset=None):
         return self.request.user
-
-    def form_valid(self, form):
-        # Добавьте обработку изображения перед сохранением формы
-        form.instance.profile_picture = self.request.FILES.get('profile_picture')
-        return super().form_valid(form)
 
 
 @login_required(login_url='login/')
