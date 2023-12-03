@@ -13,4 +13,6 @@ class CustomUserCreationForm(UserCreationForm):
 class CustomUserChangeForm(UserChangeForm):
     class Meta:
         model = CustomUser
-        fields = ('username', 'email', 'first_name', 'last_name', 'gender', 'birth_date')
+        fields = ('username', 'email', 'first_name', 'last_name', 'gender', 'birth_date', 'profile_picture')
+
+    profile_picture = forms.ImageField(label='Фотография профиля', required=False)

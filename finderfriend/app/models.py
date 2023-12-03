@@ -17,3 +17,4 @@ class CustomUser(AbstractUser):
 
     gender = models.CharField('Пол', max_length=1, choices=GENDERS, default='')
     birth_date = models.CharField('Дата рождения', default='2000-01-01')
+    profile_picture = models.ImageField('Фотография профиля', upload_to='profile_pics/', blank=True, null=True)
