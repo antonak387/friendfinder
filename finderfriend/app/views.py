@@ -35,7 +35,12 @@ class ProfileEditView(LoginRequiredMixin, UpdateView):
 
 @login_required(login_url='login/')
 def index(request):
-    return render(request, 'app/index.html')
+    random_user = CustomUser.objects.order_by('?').first()
+
+    context = {
+        'user': random_user,
+    }
+    return render(request, 'app/index.html', context)
 
 
 @login_required(login_url='login/')

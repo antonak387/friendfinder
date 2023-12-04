@@ -1,22 +1,26 @@
 {% extends 'app/layout.html' %}
 
-{% block title  %}Главная{% endblock %}
+{% block title  %}feed{% endblock %}
 
 
-{% block content  %}
+{% block content %}
 
 <div class="container d-flex justify-content-center mt-5">
     <div class="card p-3 py-4">
         <div class="text-center">
-			<img src="https://i.imgur.com/stD0Q19.jpg" width="100" class="rounded-circle">
+            {% if user.image %}
+            <img src="{{ user.image.url }}" width="400">
+            {% else %}
+            <img src="../static/app/images/default.png" width="400">
+            {% endif %}
             <h3 class="mt-2">{{ user.username }}</h3>
-			<span class="mt-1 clearfix">Android Developer</span>
-			<hr class="line">
-			<button class="profile_button px-5">View profile</button>
-		</div>
+            <span class="mt-1 clearfix">{{ user.first_name }}</span>
+            <hr class="line">
+            <a class="btn btn-outline-success rounded-pill me-2">Нравится</a>
+            <a class="btn btn-outline-danger rounded-pill me-2">Не нравится</a>
+        </div>
     </div>
 </div>
 
-
-
 {% endblock %}
+
