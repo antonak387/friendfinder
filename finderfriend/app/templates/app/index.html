@@ -16,11 +16,71 @@
             <h3 class="mt-2">{{ user.username }}</h3>
             <span class="mt-1 clearfix">{{ user.first_name }}</span>
             <hr class="line">
-            <a class="btn btn-outline-success rounded-pill me-2">Нравится</a>
-            <a class="btn btn-outline-danger rounded-pill me-2">Не нравится</a>
+            <a id="refresh" class="btn btn-outline-success rounded-pill me-2" data-user-id="{{ user.id }}">Нравится</a>
+            <a id="refresh1" class="btn btn-outline-danger rounded-pill me-2">Не нравится</a>
         </div>
     </div>
 </div>
+
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        // Функция для получения CSRF-токена из куки
+        function getCookie(name) {
+            var cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                var cookies = document.cookie.split(';');
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = jQuery.trim(cookies[i]);
+                    // Ищем строку, начинающуюся с имени токена
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        $('#refresh').on('click', function () {
+            var user_id = $(this).data('user-id');
+            var csrftoken = getCookie('csrftoken');  // Получаем CSRF-токен
+
+            if (user_id !== undefined) {
+                $.ajax({
+                    type: 'POST',
+                    url: '/app/like_user/' + user_id + '/',
+                    headers: {'X-CSRFToken': csrftoken},  // Устанавливаем CSRF-токен в заголовке
+                    success: function (data) {
+                        if (data.success) {
+                            alert('Лайк успешно добавлен!');
+                        } else {
+                            alert('Лайк не был добавлен. Возможно, вы уже лайкали данного пользователя.');
+                        }
+                    },
+                    error: function () {
+                        alert('Произошла ошибка при отправке запроса.');
+                    }
+                });
+            } else {
+                alert('Ошибка: Не удалось получить ID пользователя.');
+            }
+        });
+    });
+</script>
+
+
+<script>
+    document.getElementById('refresh').addEventListener('click', function() {
+        location.reload(); // Этот код обновляет текущую страницу
+    });
+    document.getElementById('refresh1').addEventListener('click', function() {
+        location.reload();
+    });
+</script>
 
 {% endblock %}
 

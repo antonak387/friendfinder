@@ -8,6 +8,10 @@ class Likes(models.Model):
     receiver = models.ForeignKey('CustomUser', related_name='likes_received', on_delete=models.CASCADE)
     timestamp = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        verbose_name = 'Like'
+        verbose_name_plural = 'Likes'
+
 
 class CustomUser(AbstractUser):
     GENDERS = (

@@ -11,6 +11,11 @@ from django.views.generic import UpdateView
 from .models import CustomUser
 from .forms import CustomUserChangeForm
 
+from django.shortcuts import get_object_or_404
+from .models import Likes
+from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
+
 
 class SignUp(CreateView):
     form_class = CustomUserCreationForm
@@ -41,6 +46,17 @@ def index(request):
         'user': random_user,
     }
     return render(request, 'app/index.html', context)
+
+
+@login_required(login_url='login/')
+def like_user(request, user_id):
+    if request.method == 'POST':
+        sender = request.user
+        receiver = get_object_or_404(CustomUser, id=user_id)
+        if not Likes.objects.filter(sender=sender, receiver=receiver).exists():
+            Likes.objects.create(sender=sender, receiver=receiver)
+            return JsonResponse({'success': True})
+    return JsonResponse({'success': False})
 
 
 @login_required(login_url='login/')
