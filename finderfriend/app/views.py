@@ -1,20 +1,13 @@
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render
-
+from django.shortcuts import render, get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic.edit import CreateView
-from .forms import CustomUserCreationForm
 from django.contrib.auth import login
-
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import UpdateView
-from .models import CustomUser
-from .forms import CustomUserChangeForm
-
-from django.shortcuts import get_object_or_404
-from .models import Likes
-from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
+from .forms import CustomUserCreationForm, CustomUserChangeForm
+from .models import CustomUser, Likes, Matches
 
 
 class SignUp(CreateView):
@@ -40,11 +33,12 @@ class ProfileEditView(LoginRequiredMixin, UpdateView):
 
 @login_required(login_url='login/')
 def index(request):
-    random_user = CustomUser.objects.order_by('?').first()
+    while True:
+        random_user = CustomUser.objects.order_by('?').first()
+        if random_user != request.user:
+            break
 
-    context = {
-        'user': random_user,
-    }
+    context = {'user': random_user,}
     return render(request, 'app/index.html', context)
 
 
@@ -55,6 +49,8 @@ def like_user(request, user_id):
         receiver = get_object_or_404(CustomUser, id=user_id)
         if not Likes.objects.filter(sender=sender, receiver=receiver).exists():
             Likes.objects.create(sender=sender, receiver=receiver)
+            if Likes.objects.filter(sender=receiver, receiver=sender).exists() and not Matches.objects.filter(user2=sender, user1=receiver).exists() and not Matches.objects.filter(user2=receiver, user1=sender).exists():
+                Matches.objects.create(user2=sender, user1=receiver, json_dialog={})
             return JsonResponse({'success': True})
     return JsonResponse({'success': False})
 
@@ -70,26 +66,35 @@ def likes(request):
     if like_user_id is not None:
         if like_user_id.sender_id != request.user.id:
             like_user_name = CustomUser.objects.get(id=like_user_id.sender_id)
-            context = {
-                'user': like_user_name,
-            }
+            context = {'user': like_user_name}
             return render(request, 'app/likes.html', context)
         else:
-            context = {
-                'user': 0
-            }
+            context = {'user': -1}
             return render(request, 'app/likes.html', context)
     else:
-        context = {
-            'user': 0
-        }
-        return render(request, 'app/likes.html', context)
-
+        return render(request, 'app/no_likes.html')
 
 
 @login_required(login_url='login/')
 def matches(request):
-    return render(request, 'app/likes.html')
+    matches_user_name = []
+
+    matches_user1 = Matches.objects.order_by('?').filter(user1=request.user)
+    for cur_id in matches_user1:
+        matches_user_name += CustomUser.objects.get(id=cur_id.user1_id)
+
+    matches_user2 = Matches.objects.order_by('?').filter(user2=request.user).first()
+    for cur_id in matches_user2:
+        matches_user_name += CustomUser.objects.get(id=cur_id.user2_id)
+
+    print({'user': matches_user_name})
+
+    if matches_user_name is not None:
+        print({'user': matches_user_name})
+        context = {'user': matches_user_name}
+        return render(request, 'app/matches.html', context)
+    else:
+        return render(request, 'app/no_likes.html')
 
 
 @login_required(login_url='login/')

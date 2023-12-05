@@ -1,4 +1,5 @@
 from django.db import models
+#from django.contrib.postgres.fields import JSONField
 from django.contrib.auth.models import AbstractUser
 
 
@@ -11,6 +12,17 @@ class Likes(models.Model):
     class Meta:
         verbose_name = 'Like'
         verbose_name_plural = 'Likes'
+
+
+class Matches(models.Model):
+    user1 = models.ForeignKey('CustomUser', related_name='user1', on_delete=models.CASCADE)
+    user2 = models.ForeignKey('CustomUser', related_name='user2', on_delete=models.CASCADE)
+    timestamp = models.DateTimeField(auto_now_add=True)
+    json_dialog = models.JSONField()
+
+    class Meta:
+        verbose_name = 'Match'
+        verbose_name_plural = 'Matches'
 
 
 class CustomUser(AbstractUser):

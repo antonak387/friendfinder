@@ -1,0 +1,20 @@
+{% extends 'app/layout.html' %}
+
+{% block title  %}Лайки{% endblock %}
+
+
+{% block content %}
+
+<div class="container d-flex justify-content-center mt-5">
+    <div class="card p-3 py-4">
+        <div class="text-center">
+            <img src="../static/app/images/default.png" class="img-fluid max-height-100">
+            <h3 class="mt-2">Здесь пока никого нет</h3>
+            <span class="mt-1 clearfix">(=^-ω-^=)</span>
+            <hr class="line">
+            <a href="{% url 'feed' %}" class="btn btn-outline-dark rounded-pill me-2">На главную</a>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
