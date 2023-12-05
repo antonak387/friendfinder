@@ -66,7 +66,25 @@ def profile_view(request):
 
 @login_required(login_url='login/')
 def likes(request):
-    return render(request, 'app/likes.html')
+    like_user_id = Likes.objects.order_by('?').filter(receiver_id=request.user).first()
+    if like_user_id is not None:
+        if like_user_id.sender_id != request.user.id:
+            like_user_name = CustomUser.objects.get(id=like_user_id.sender_id)
+            context = {
+                'user': like_user_name,
+            }
+            return render(request, 'app/likes.html', context)
+        else:
+            context = {
+                'user': 0
+            }
+            return render(request, 'app/likes.html', context)
+    else:
+        context = {
+            'user': 0
+        }
+        return render(request, 'app/likes.html', context)
+
 
 
 @login_required(login_url='login/')
