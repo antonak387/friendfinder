@@ -80,18 +80,15 @@ def matches(request):
     matches_user_name = []
 
     matches_user1 = Matches.objects.order_by('?').filter(user1=request.user)
-    for cur_id in matches_user1:
-        matches_user_name += CustomUser.objects.get(id=cur_id.user1_id)
+    for cur_id1 in matches_user1:
+        matches_user_name.append(CustomUser.objects.get(id=cur_id1.user2_id))
 
-    matches_user2 = Matches.objects.order_by('?').filter(user2=request.user).first()
-    for cur_id in matches_user2:
-        matches_user_name += CustomUser.objects.get(id=cur_id.user2_id)
+    matches_user2 = Matches.objects.order_by('?').filter(user2=request.user)
+    for cur_id2 in matches_user2:
+        matches_user_name.append(CustomUser.objects.get(id=cur_id2.user1_id))
 
-    print({'user': matches_user_name})
-
-    if matches_user_name is not None:
-        print({'user': matches_user_name})
-        context = {'user': matches_user_name}
+    if matches_user_name:
+        context = {'users': matches_user_name}
         return render(request, 'app/matches.html', context)
     else:
         return render(request, 'app/no_likes.html')

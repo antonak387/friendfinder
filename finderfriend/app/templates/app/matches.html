@@ -4,7 +4,9 @@
 
 {% block content %}
   <h2>Your Matches</h2>
-    <p> Match with {{ user.username }} </p>
+    {% for user in users %}
+      <p> Match with {{ user.username}} </p>
+    {% endfor %}
     <!-- Дополнительная информация о матче, например, json_dialog, может быть добавлена здесь -->
 {% endblock %}
 
