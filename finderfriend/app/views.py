@@ -1,13 +1,16 @@
+from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404
 from django.urls import reverse_lazy
-from django.views.generic.edit import CreateView
-from django.contrib.auth import login
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import UpdateView
-from django.http import JsonResponse
+from django.views.generic.edit import CreateView
+
 from .forms import CustomUserCreationForm, CustomUserChangeForm
 from .models import CustomUser, Likes, Matches
+
+import json
 
 
 class SignUp(CreateView):
@@ -38,7 +41,7 @@ def index(request):
         if random_user != request.user:
             break
 
-    context = {'user': random_user,}
+    context = {'user': random_user, }
     return render(request, 'app/index.html', context)
 
 
@@ -47,10 +50,26 @@ def like_user(request, user_id):
     if request.method == 'POST':
         sender = request.user
         receiver = get_object_or_404(CustomUser, id=user_id)
+
         if not Likes.objects.filter(sender=sender, receiver=receiver).exists():
             Likes.objects.create(sender=sender, receiver=receiver)
-            if Likes.objects.filter(sender=receiver, receiver=sender).exists() and not Matches.objects.filter(user2=sender, user1=receiver).exists() and not Matches.objects.filter(user2=receiver, user1=sender).exists():
-                Matches.objects.create(user2=sender, user1=receiver, json_dialog={})
+
+            if Likes.objects.filter(sender=receiver, receiver=sender).exists() and \
+                    not Matches.objects.filter(user2=sender, user1=receiver).exists() and \
+                    not Matches.objects.filter(user2=receiver, user1=sender).exists():
+                Matches.objects.create(
+                    user2=sender,
+                    user1=receiver,
+                    json_dialog={
+                        "participants": [
+                            {"user_id": sender.id, "username": sender.username},
+                            {"user_id": receiver.id, "username": receiver.username}
+                        ],
+                        "messages": [
+                            {"sender": sender.id, "text": "Привет, как дела?"},
+                        ]
+                    }
+                )
             return JsonResponse({'success': True})
     return JsonResponse({'success': False})
 
@@ -78,18 +97,35 @@ def likes(request):
 @login_required(login_url='login/')
 def matches(request):
     matches_user_name = []
-
-    matches_user1 = Matches.objects.order_by('?').filter(user1=request.user)
+    match = []
+    matches_user1 = Matches.objects.order_by('timestamp').filter(user1=request.user)
     for cur_id1 in matches_user1:
         matches_user_name.append(CustomUser.objects.get(id=cur_id1.user2_id))
+        match.append(cur_id1.id)
 
-    matches_user2 = Matches.objects.order_by('?').filter(user2=request.user)
+    matches_user2 = Matches.objects.order_by('timestamp').filter(user2=request.user)
     for cur_id2 in matches_user2:
         matches_user_name.append(CustomUser.objects.get(id=cur_id2.user1_id))
+        match.append(cur_id2.id)
 
     if matches_user_name:
-        context = {'users': matches_user_name}
+        users_and_matches = zip(matches_user_name, match)
+        context = {'users_and_matches': users_and_matches}
         return render(request, 'app/matches.html', context)
+    else:
+        return render(request, 'app/no_likes.html')
+
+
+@login_required(login_url='login/')
+def chat(request, match_id):
+    current_match = Matches.objects.get(id=match_id)
+
+    json_data = current_match.json_dialog
+    print(json_data.get('participants')[0].get('user_id'), request.user.id)
+
+    if current_match:
+        context = {'match': current_match}
+        return render(request, 'app/chat.html', context)
     else:
         return render(request, 'app/no_likes.html')
 

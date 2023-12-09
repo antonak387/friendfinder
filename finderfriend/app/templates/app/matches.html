@@ -3,10 +3,29 @@
 {% block title  %}Общение{% endblock %}
 
 {% block content %}
-  <h2>Your Matches</h2>
-    {% for user in users %}
-      <p> Match with {{ user.username}} </p>
-    {% endfor %}
-    <!-- Дополнительная информация о матче, например, json_dialog, может быть добавлена здесь -->
+<style>
+    /* Дополнительный стиль для высоты строк */
+    .chat-row {
+        min-height: 64px;
+    }
+    .image-height{
+        width: 48px;
+        height: 48px;
+        object-fit: cover;
+    }
+</style>
+
+<div class="container d-flex justify-content-center mt-5">
+    <div class="list-group">
+        <h3 class>Перейти в диалог с</h3>
+        {% for user, match_id in users_and_matches %}
+        <a href="{% url 'chat' match_id=match_id %}" class="list-group-item list-group-item-action chat-row">
+            <img src="{{ user.image.url }}" class="img-fluid image-height rounded-circle me-3">
+            {{ user.username }}
+        </a>
+        {% endfor %}
+    </div>
+</div>
+
 {% endblock %}
 

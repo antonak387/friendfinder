@@ -1,6 +1,5 @@
 from django.urls import path, include
 from . import views
-from .views import like_user
 
 urlpatterns = [
     path('', views.index, name='feed'),
@@ -10,5 +9,6 @@ urlpatterns = [
     path('profile_edit', views.ProfileEditView.as_view(), name='profile_edit'),
     path('', include('django.contrib.auth.urls')),
     path('signup/', views.SignUp.as_view(), name='signup'),
-    path('like_user/<int:user_id>/', like_user, name='like_user'),
+    path('like_user/<int:user_id>/', views.like_user, name='like_user'),
+    path('chat/<int:match_id>/', views.chat, name='chat'),
 ]
