@@ -1,14 +1,14 @@
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render, get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic import UpdateView
 from django.views.generic.edit import CreateView
 
 from .forms import CustomUserCreationForm, CustomUserChangeForm
-from .models import CustomUser, Likes, Matches
+from .models import CustomUser, Likes, Matches, Message
 
 import json
 
@@ -59,16 +59,7 @@ def like_user(request, user_id):
                     not Matches.objects.filter(user2=receiver, user1=sender).exists():
                 Matches.objects.create(
                     user2=sender,
-                    user1=receiver,
-                    json_dialog={
-                        "participants": [
-                            {"user_id": sender.id, "username": sender.username},
-                            {"user_id": receiver.id, "username": receiver.username}
-                        ],
-                        "messages": [
-                            {"sender": sender.id, "text": "Привет, как дела?"},
-                        ]
-                    }
+                    user1=receiver
                 )
             return JsonResponse({'success': True})
     return JsonResponse({'success': False})
@@ -118,17 +109,31 @@ def matches(request):
 
 @login_required(login_url='login/')
 def chat(request, match_id):
-    current_match = Matches.objects.get(id=match_id)
-
-    json_data = current_match.json_dialog
-    print(json_data.get('participants')[0].get('user_id'), request.user.id)
-
-    if current_match:
-        context = {'match': current_match}
+    if match_id:
+        context = {'match_id': match_id,
+                   'username': request.user.username}
         return render(request, 'app/chat.html', context)
     else:
         return render(request, 'app/no_likes.html')
 
+
+@login_required(login_url='login/')
+def send(request):
+    message = request.POST['message']
+    username = request.POST['username']
+    match_id = request.POST['match_id']
+
+    new_message = Message.objects.create(value=message, user=username, match_id=match_id)
+    new_message.save()
+    return HttpResponse('Message sent successfully')
+
+
+@login_required(login_url='login/')
+def getMessages(request, match_id):
+    room_details = Matches.objects.get(id=match_id)
+
+    messages = Message.objects.filter(match_id=room_details.id)
+    return JsonResponse({"messages":list(messages.values())})
 
 @login_required(login_url='login/')
 def profile_edit(request):

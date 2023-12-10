@@ -11,4 +11,6 @@ urlpatterns = [
     path('signup/', views.SignUp.as_view(), name='signup'),
     path('like_user/<int:user_id>/', views.like_user, name='like_user'),
     path('chat/<int:match_id>/', views.chat, name='chat'),
+    path('send', views.send, name='send'),
+    path('getMessages/<int:match_id>/', views.getMessages, name='getMessages'),
 ]
