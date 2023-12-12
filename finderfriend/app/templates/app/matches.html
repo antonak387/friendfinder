@@ -18,10 +18,17 @@
     <div class="list-group">
         <h3 class>Перейти в диалог с</h3>
         {% for user, match_id in users_and_matches %}
+        {% if user.image and user.image.url %}
         <a href="{% url 'chat' match_id=match_id %}" class="list-group-item list-group-item-action chat-row">
             <img src="{{ user.image.url }}" class="img-fluid image-height rounded-circle me-3">
             {{ user.username }}
         </a>
+        {% else %}
+        <a href="{% url 'chat' match_id=match_id %}" class="list-group-item list-group-item-action chat-row">
+            <img src="../static/app/images/default.png" class="img-fluid image-height rounded-circle me-3">
+            {{ user.username }}
+        </a>
+        {% endif %}
         {% endfor %}
     </div>
 </div>

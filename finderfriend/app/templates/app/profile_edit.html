@@ -3,50 +3,122 @@
 {% block title  %}Редактор профиля{% endblock %}
 
 {% block content %}
-<div class="container mt-5">
+<div class="container mt-3">
     <div class="row justify-content-center">
         <div class="col-md-6">
-            <h2 class="text-center mb-4">Редактор профиля</h2>
+            <h2 class="text-center mb-3">Редактор профиля</h2>
             <form method="post" class="form" enctype="multipart/form-data">
                 {% csrf_token %}
-                <div class="mb-3">
-                    <label for="{{ form.username.id_for_label }}" class="form-label">Username</label>
-                    {{ form.username }}
+                <div class="mb-2">
+                    <label for="{{ form.username.id_for_label }}" class="form-label">Username:</label>
+                    <input type="text" name="username" class="form-control rounded-pill" id="username" value="{{ form.username.value|default:'' }}">
                 </div>
-                <div class="mb-3">
-                    <label for="{{ form.email.id_for_label }}" class="form-label">Email</label>
-                    {{ form.email }}
+                <div class="mb-2">
+                    <label for="{{ form.email.id_for_label }}" class="form-label">Email:</label>
+                    <input type="text" name="email" class="form-control rounded-pill" id="email" value="{{ form.email.value|default:'' }}">
                 </div>
-                <div class="mb-4">
-                    <label for="{{ form.first_name.id_for_label }}">First Name:</label>
-                    {{ form.first_name }}
+                <div class="mb-2">
+                    <label for="{{ form.first_name.id_for_label }}">Имя:</label>
+                    <input type="text" name="first_name" class="form-control rounded-pill" id="first_name" value="{{ form.first_name.value|default:'' }}">
                 </div>
-                <div class="mb-4">
-                    <label for="{{ form.last_name.id_for_label }}">Last Name:</label>
-                    {{ form.last_name }}
+                <div class="mb-2">
+                    <label for="{{ form.last_name.id_for_label }}">Фамилия:</label>
+                    <input type="text" name="last_name" class="form-control rounded-pill" id="last_name" value="{{ form.last_name.value|default:'' }}">
                 </div>
-                <div class="mb-4">
-                    <label for="{{ form.gender.id_for_label }}">Gender:</label>
+                <div class="mb-2">
+                    <label for="{{ form.gender.id_for_label }}">Пол:</label>
                     {{ form.gender }}
                 </div>
-                <div class="mb-4">
+                <div class="mb-2">
                     <label for="{{ form.birth_date.id_for_label }}">Birth Date:</label>
                     {{ form.birth_date }}
                 </div>
-                <div class="mb-4">
-                    <label for="{{ form.image.id_for_label }}">Фотография профиля:</label>
+                <div class="mb-2">
+                    <label for="{{ form.image.id_for_label }}" class="form-label">Фотография профиля:</label>
                     {{ form.image }}
+<!--                    <div id="drop-zone" class="form-control rounded-pill">-->
+<!--                        <p class="text-center mb-0">Drag & Drop or click to upload</p>-->
+<!--                        <input type="file" id="file-input" accept="image/*" style="display: none;" value="{{ form.image.value|default:'' }}"/>-->
+<!--                    </div>
+<!--                    <div id="preview-container" class="mt-2">-->
+<!--                        {% if form.instance.image %}-->
+<!--                        <img src="{{ form.instance.image.url }}" alt="Profile Image" id="image-preview"-->
+<!--                             class="img-thumbnail"/>-->
+<!--                        {% else %}-->
+<!--                        <p class="text-muted">No profile image uploaded</p>-->
+<!--                        {% endif %}-->
+<!--                    </div>-->
                 </div>
-
-                <button type="submit" class="btn btn-outline-dark rounded-pill w-100">Сохранить изменения</button>
+                {{ form.errors }}
+                <button type="submit" class="btn btn-outline-dark rounded-pill w-100 margin-bot-10">
+                    Сохранить изменения
+                </button>
             </form>
-
-            {% if form.errors %}
-            <div class="alert alert-danger mt-4">
-                <strong>Error!</strong> Please correct the errors below.
-            </div>
-            {% endif %}
         </div>
     </div>
 </div>
+
+<!--<script>-->
+<!--    document.getElementById('drop-zone').addEventListener('dragover', function (e) {-->
+<!--        e.preventDefault();-->
+<!--        this.classList.add('drag-over');-->
+<!--    });-->
+
+<!--    document.getElementById('drop-zone').addEventListener('dragleave', function () {-->
+<!--        this.classList.remove('drag-over');-->
+<!--    });-->
+
+<!--    document.getElementById('drop-zone').addEventListener('drop', function (e) {-->
+<!--        e.preventDefault();-->
+<!--        this.classList.remove('drag-over');-->
+<!--        handleDrop(e.dataTransfer.files);-->
+<!--    });-->
+
+<!--    document.getElementById('drop-zone').addEventListener('click', function () {-->
+<!--        document.getElementById('file-input').click();-->
+<!--    });-->
+
+<!--    document.getElementById('file-input').addEventListener('change', function () {-->
+<!--        handleDrop(this.files);-->
+<!--    });-->
+
+<!--    function handleDrop(files) {-->
+<!--        if (files.length > 0) {-->
+<!--            var reader = new FileReader();-->
+
+<!--            reader.onload = function (e) {-->
+<!--                var preview = document.getElementById('image-preview');-->
+<!--                var container = document.getElementById('preview-container');-->
+<!--                if (!preview) {-->
+<!--                    preview = document.createElement('img');-->
+<!--                    preview.id = 'image-preview';-->
+<!--                    preview.alt = 'Profile Image';-->
+<!--                    preview.className = 'img-thumbnail';-->
+<!--                    container.innerHTML = '';-->
+<!--                    container.appendChild(preview);-->
+<!--                }-->
+<!--                preview.src = e.target.result;-->
+<!--            };-->
+
+<!--            reader.readAsDataURL(files[0]);-->
+<!--        }-->
+<!--    }-->
+<!--</script>-->
+
+<!--<style>-->
+<!--    #drop-zone {-->
+<!--        border: 2px dashed #ccc;-->
+<!--        padding: 20px;-->
+<!--        text-align: center;-->
+<!--        cursor: pointer;-->
+<!--    }-->
+
+<!--    #drop-zone.drag-over {-->
+<!--        background-color: #f0f0f0;-->
+<!--    }-->
+
+<!--    #preview-container {-->
+<!--        margin-top: 10px;-->
+<!--    }-->
+<!--</style>-->
 {% endblock %}

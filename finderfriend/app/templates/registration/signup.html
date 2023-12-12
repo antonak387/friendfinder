@@ -9,22 +9,26 @@
 
 
     <div class="mb-3">
-        <label for="id_username" class="form-label">Username</label>
-        <input class="form-control rounded-pill" type="text" name="username" maxlength="150" autocapitalize="none" autocomplete="username" autofocus="" required="" id="id_username">
+        <label for="username" class="form-label">Username</label>
+        <input class="form-control rounded-pill" type="text" name="username" maxlength="150" autocapitalize="none"
+               autocomplete="username" autofocus="" required="" id="id_username" value="{{ form.username.value|default:'' }}">
     </div>
     <div class="mb-3">
-        <label for="id_username" class="form-label">Email</label>
-        <input class="form-control rounded-pill" type="text" name="email" maxlength="254" autocapitalize="none" autocomplete="username" autofocus="" required="" id="id_email">
+        <label for="email" class="form-label">Email</label>
+        <input class="form-control rounded-pill" type="text" name="email" maxlength="254" autocapitalize="none"
+               autocomplete="username" autofocus="" required="" id="id_email" value="{{ form.email.value|default:'' }}">
     </div>
     <div class="mb-4">
-        <label for="id_password1">Password:</label>
-        <input class="form-control rounded-pill" type="password" name="password1" autocomplete="new-password" required="" id="id_password1">
+        <label for="password1">Password:</label>
+        <input class="form-control rounded-pill" type="password" name="password1" autocomplete="new-password"
+               required="" id="id_password1" value="{{ form.email.value|default:'' }}">
     </div>
     <div class="mb-4">
-        <label for="id_password2">Password confirmation:</label>
-        <input class="form-control rounded-pill" type="password" name="password2" autocomplete="new-password" required="" id="id_password2">
+        <label for="password2">Password confirmation:</label>
+        <input class="form-control rounded-pill" type="password" name="password2" autocomplete="new-password"
+               required="" id="id_password2" value="{{ form.email.value|default:'' }}">
     </div>
-    
+
     <button class="btn btn-outline-dark w-100 py-8 fs-5 mb-4 rounded-pill">Создать новый аккаунт</button>
     {{ form.errors }}
 

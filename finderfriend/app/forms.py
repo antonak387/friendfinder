@@ -20,3 +20,4 @@ class CustomUserChangeForm(UserChangeForm):
     image = forms.ImageField(label='Фотография профиля', required=False)
 
 
+
