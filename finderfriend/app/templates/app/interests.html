@@ -1,0 +1,57 @@
+{% extends 'app/layout.html' %}
+
+{% block title  %}Профиль{% endblock %}
+
+
+{% block content  %}
+
+<div class="container mt-5">
+  <div class="row">
+    <!-- Группа "Любители Пива" -->
+    <div class="col-md-3">
+      <div class="card">
+        <img src="../static/app/images/beer-image.jpg" class="card-img-top" alt="Любители Пива">
+        <div class="card-body">
+          <h5 class="card-title">Любители Пива</h5>
+          <a href="{% url 'beer_club' %}" class="btn btn-primary">Перейти</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Группа "Любители Кофе" -->
+    <div class="col-md-3">
+      <div class="card">
+        <img src="../static/app/images/coffee-image.jpg" class="card-img-top" alt="Любители Кофе">
+        <div class="card-body">
+          <h5 class="card-title">Любители Кофе</h5>
+          <a href="{% url 'coffee_club' %}" class="btn btn-primary">Перейти</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Группа "Прогулки" -->
+    <div class="col-md-3">
+      <div class="card">
+        <img src="../static/app/images/walk-image.jpg" class="card-img-top" alt="Прогулки">
+        <div class="card-body">
+          <h5 class="card-title">Прогулки</h5>
+          <a href="{% url 'walks_club' %}"  class="btn btn-primary">Перейти</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Группа "Компьютерные игры" -->
+    <div class="col-md-3">
+      <div class="card">
+        <img src="../static/app/images/computer_games.jpg" class="card-img-top" alt="Компьютерные игры">
+        <div class="card-body">
+          <h5 class="card-title">Компьютерные игры</h5>
+          <a href="{% url 'games_club' %}" class="btn btn-primary">Перейти</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+

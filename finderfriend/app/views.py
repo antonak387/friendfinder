@@ -10,7 +10,9 @@ from django.views.generic.edit import CreateView
 from .forms import CustomUserCreationForm, CustomUserChangeForm
 from .models import CustomUser, Likes, Matches, Message
 
-import json
+from django.db import connection
+
+from datetime import datetime
 
 
 class SignUp(CreateView):
@@ -36,32 +38,65 @@ class ProfileEditView(LoginRequiredMixin, UpdateView):
 
 @login_required(login_url='login/')
 def index(request):
-    while True:
-        random_user = CustomUser.objects.order_by('?').first()
-        if random_user != request.user:
-            break
+    with connection.cursor() as cursor:
+        cursor.execute(
+            '''
+            SELECT *
+            FROM app_customuser
+            WHERE id <> %s
+            ORDER BY RANDOM()
+            LIMIT 1
+            ''',
+            [request.user.id]
+        )
+        row = cursor.fetchone()
 
-    context = {'user': random_user, }
-    return render(request, 'app/index.html', context)
-
+    if row:
+        random_user = CustomUser.objects.get(id=row[0])
+        context = {'user': random_user}
+        return render(request, 'app/index.html', context)
+    else:
+        # Handle the case when no random user is found
+        return HttpResponse('No random user found.')
+    
 
 @login_required(login_url='login/')
 def like_user(request, user_id):
     if request.method == 'POST':
-        sender = request.user
+        sender = request.user.id  # Используем user.id, чтобы получить только идентификатор пользователя
         receiver = get_object_or_404(CustomUser, id=user_id)
 
-        if not Likes.objects.filter(sender=sender, receiver=receiver).exists():
-            Likes.objects.create(sender=sender, receiver=receiver)
+        with connection.cursor() as cursor:
+            cursor.execute(
+                '''
+                INSERT INTO app_likes (sender_id, receiver_id)
+                VALUES (%s, %s)
+                ON CONFLICT (sender_id, receiver_id) DO NOTHING
+                RETURNING 1
+                ''',
+                [sender, receiver.id]
+            )
 
-            if Likes.objects.filter(sender=receiver, receiver=sender).exists() and \
-                    not Matches.objects.filter(user2=sender, user1=receiver).exists() and \
-                    not Matches.objects.filter(user2=receiver, user1=sender).exists():
-                Matches.objects.create(
-                    user2=sender,
-                    user1=receiver
-                )
-            return JsonResponse({'success': True})
+            row = cursor.fetchone()
+
+            if row:
+                try:
+                    cursor.execute(
+                        '''
+                        INSERT INTO app_matches (user2_id, user1_id)
+                        VALUES (%s, %s)
+                        ON CONFLICT (user2_id, user1_id) DO NOTHING
+                        RETURNING 1
+                        ''',
+                        [sender, receiver.id]
+                    )
+                except Exception as e:
+                    # Если возникает ошибка из-за отсутствия уникального ограничения в app_matches,
+                    # попробуйте другой подход, например, через проверку существования
+                    pass
+                else:
+                    return JsonResponse({'success': True})
+
     return JsonResponse({'success': False})
 
 
@@ -72,10 +107,25 @@ def profile_view(request):
 
 @login_required(login_url='login/')
 def likes(request):
-    like_user_id = Likes.objects.order_by('?').filter(receiver_id=request.user).first()
-    if like_user_id is not None:
-        if like_user_id.sender_id != request.user.id:
-            like_user_name = CustomUser.objects.get(id=like_user_id.sender_id)
+    with connection.cursor() as cursor:
+        cursor.execute(
+            '''
+            SELECT sender_id
+            FROM app_likes
+            WHERE receiver_id = %s
+            ORDER BY RANDOM()
+            LIMIT 1
+            ''',
+            [request.user.id]
+        )
+
+        row = cursor.fetchone()
+
+    if row is not None:
+        sender_id = row[0]
+
+        if sender_id != request.user.id:
+            like_user_name = CustomUser.objects.get(id=sender_id)
             context = {'user': like_user_name}
             return render(request, 'app/likes.html', context)
         else:
@@ -87,17 +137,31 @@ def likes(request):
 
 @login_required(login_url='login/')
 def matches(request):
+    with connection.cursor() as cursor:
+        cursor.execute(
+            '''
+            SELECT user2_id, id
+            FROM app_matches
+            WHERE user1_id = %s
+            UNION
+            SELECT user1_id, id
+            FROM app_matches
+            WHERE user2_id = %s
+            ''',
+            [request.user.id, request.user.id]
+        )
+
+        rows = cursor.fetchall()
+
     matches_user_name = []
     match = []
-    matches_user1 = Matches.objects.order_by('timestamp').filter(user1=request.user)
-    for cur_id1 in matches_user1:
-        matches_user_name.append(CustomUser.objects.get(id=cur_id1.user2_id))
-        match.append(cur_id1.id)
 
-    matches_user2 = Matches.objects.order_by('timestamp').filter(user2=request.user)
-    for cur_id2 in matches_user2:
-        matches_user_name.append(CustomUser.objects.get(id=cur_id2.user1_id))
-        match.append(cur_id2.id)
+    for row in rows:
+        user_id = row[0]
+        match_id = row[1]
+
+        matches_user_name.append(CustomUser.objects.get(id=user_id))
+        match.append(match_id)
 
     if matches_user_name:
         users_and_matches = zip(matches_user_name, match)
@@ -119,22 +183,69 @@ def chat(request, match_id):
 
 @login_required(login_url='login/')
 def send(request):
-    message = request.POST['message']
-    username = request.POST['username']
-    match_id = request.POST['match_id']
+    if request.method == 'POST':
+        message_value = request.POST['message']
+        username = request.POST['username']
+        match_id = request.POST['match_id']
+        current_timestamp = datetime.now()
 
-    new_message = Message.objects.create(value=message, user=username, match_id=match_id)
-    new_message.save()
-    return HttpResponse('Message sent successfully')
+        with connection.cursor() as cursor:
+            cursor.execute(
+                '''
+                INSERT INTO app_message (value, "user", match_id, timestamp)
+                VALUES (%s, %s, %s, %s)
+                ''',
+                [message_value, username, match_id, current_timestamp]
+            )
+
+        return HttpResponse('Message sent successfully')
 
 
 @login_required(login_url='login/')
 def getMessages(request, match_id):
-    room_details = Matches.objects.get(id=match_id)
+    with connection.cursor() as cursor:
+        cursor.execute(
+            '''
+            SELECT id, value, timestamp, "user" 
+            FROM app_message 
+            WHERE match_id = %s
+            ORDER BY timestamp
+            ''',
+            [match_id]
+        )
 
-    messages = Message.objects.filter(match_id=room_details.id)
-    return JsonResponse({"messages":list(messages.values())})
+        rows = cursor.fetchall()
+
+    messages = [{'id': row[0], 'value': row[1], 'timestamp': row[2], 'user': row[3]} for row in rows]
+
+    return JsonResponse({"messages": messages})
+
 
 @login_required(login_url='login/')
 def profile_edit(request):
     return render(request, 'app/profile_edit.html')
+
+
+@login_required(login_url='login/')
+def interests(request):
+    return render(request, 'app/interests.html')
+
+
+@login_required(login_url='login/')
+def beer_club(request):
+    pass
+
+
+@login_required(login_url='login/')
+def coffee_club(request):
+    pass
+
+
+@login_required(login_url='login/')
+def walks_club(request):
+    pass
+
+
+@login_required(login_url='login/')
+def games_club(request):
+    pass
