@@ -8,7 +8,7 @@ from django.views.generic import UpdateView
 from django.views.generic.edit import CreateView
 
 from .forms import CustomUserCreationForm, CustomUserChangeForm
-from .models import CustomUser, Likes, Matches, Message
+from .models import CustomUser, Likes, Matches, Message, Ads
 
 import json
 
@@ -133,8 +133,31 @@ def getMessages(request, match_id):
     room_details = Matches.objects.get(id=match_id)
 
     messages = Message.objects.filter(match_id=room_details.id)
-    return JsonResponse({"messages":list(messages.values())})
+    return JsonResponse({"messages": list(messages.values())})
+
 
 @login_required(login_url='login/')
 def profile_edit(request):
     return render(request, 'app/profile_edit.html')
+
+
+@login_required()
+def ads(request):
+    context = {'username': request.user.username}
+    return render(request, 'app/ads.html', context)
+
+
+@login_required(login_url='login/')
+def send_ads(request):
+    message = request.POST['message']
+    username = request.POST['username']
+
+    new_message = Ads.objects.create(value=message, user=username)
+    new_message.save()
+    return HttpResponse('Message sent successfully')
+
+
+@login_required(login_url='login/')
+def getAds(request):
+    messages = Ads.objects
+    return JsonResponse({"messages": list(messages.values())})

@@ -39,3 +39,9 @@ class Message(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
     user = models.CharField(max_length=255)
     match_id = models.IntegerField()
+
+
+class Ads(models.Model):
+    value = models.CharField(max_length=100000)
+    timestamp = models.DateTimeField(auto_now_add=True)
+    user = models.CharField(max_length=255)
